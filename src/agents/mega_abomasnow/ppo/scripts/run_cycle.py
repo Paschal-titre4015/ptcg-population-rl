@@ -1,0 +1,105 @@
+"""Freeze Policy/Value -> fresh C++ rollout -> GPU PPO -> export -> native validation."""
+
+from __future__ import annotations
+
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[5]
+sys.path.insert(0, str(ROOT / "src"))
+import argparse
+import json
+
+from agents.mega_abomasnow.ppo.scripts.collect import (
+    CONTRACT_ID,
+    DECK_COUNTS,
+    DEFAULTS,
+    NAMES,
+    ROOT,
+    collect,
+    load_checkpoint,
+)
+from agents.mega_abomasnow.ppo.scripts.initialize import initialize
+from agents.mega_abomasnow.ppo.scripts.train import add_training_args, train, training_config
+from agents.mega_abomasnow.transformer.scripts.export import export
+from agents.mega_abomasnow.transformer.scripts.validate import validate
+
+
+def main() -> None:
+    """Parse command-line arguments and run this tool."""
+    p = argparse.ArgumentParser(description=__doc__)
+    p.add_argument("--checkpoint", type=Path, required=True)
+    p.add_argument("--output-dir", type=Path, required=True)
+    p.add_argument(
+        "--gbdt-model",
+        type=Path,
+        required=True,
+        help="Fixed opponent and post-update validation baseline",
+    )
+    p.add_argument("--binary", type=Path, default=ROOT / "build/arena_cpp")
+    p.add_argument("--cycles", type=int, default=1)
+    p.add_argument("--games-per-opponent", type=int)
+    p.add_argument("--games", type=int, default=DEFAULTS["games_per_cycle"])
+    p.add_argument("--opponent-config", type=Path)
+    p.add_argument("--opponents", nargs="+", default=DEFAULTS["opponents"])
+    p.add_argument("--workers", type=int, default=2)
+    p.add_argument("--seed", type=int, default=202640000)
+    p.add_argument("--sample-seed", type=int, default=202650000)
+    p.add_argument("--update-seed", type=int, default=204)
+    p.add_argument("--temperature", type=float, default=DEFAULTS["temperature"])
+    add_training_args(p)
+    a = p.parse_args()
+    if a.cycles < 1:
+        p.error("cycles must be positive")
+    if a.output_dir.exists() and any(a.output_dir.iterdir()):
+        p.error("output-dir must be empty")
+    current = initialize(a.checkpoint, a.output_dir / "initial.pt")
+    reports = []
+    games = len(a.opponents) * a.games_per_opponent if a.games_per_opponent is not None else a.games
+    roster = json.loads(a.opponent_config.read_text()) if a.opponent_config else {}
+    for cycle in range(a.cycles):
+        output = a.output_dir / f"cycle-{cycle:03d}"
+        collection = collect(
+            current,
+            output / "rollout",
+            a.binary,
+            a.gbdt_model,
+            a.opponents,
+            a.games_per_opponent,
+            a.seed + cycle * games,
+            a.sample_seed + cycle * games * 2,
+            a.temperature,
+            a.workers,
+            games=a.games,
+            opponent_weights=roster.get("weights"),
+            opponent_models=roster.get("models"),
+        )
+        model, payload = load_checkpoint(current, CONTRACT_ID, DECK_COUNTS, NAMES)
+        training = train(
+            model,
+            payload,
+            current,
+            output / "rollout",
+            output / "models",
+            training_config(a, a.update_seed + cycle),
+        )
+        current = output / "models/model.pt"
+        export(current, output / "models/model.bin")
+        validation = validate(
+            current, output / "models/model.bin", a.gbdt_model, output / "validation", a.binary
+        )
+        report = dict(
+            cycle=cycle,
+            games=collection["collection"]["total_games"],
+            episodes=len(collection["episodes"]),
+            decisions=collection["decisions"],
+            training=training,
+            validation=validation,
+        )
+        reports.append(report)
+        print(f"PPO cycle {cycle} complete: {current}", flush=True)
+    (a.output_dir / "cycles.json").write_text(json.dumps(reports, indent=2) + "\n")
+
+
+if __name__ == "__main__":
+    main()

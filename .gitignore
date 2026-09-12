@@ -1,0 +1,27 @@
+# Python environment and caches
+.venv/
+__pycache__/
+.ruff_cache/
+*.py[cod]
+
+# Local assets and execution outputs used by this repository
+build/
+external/
+outputs/
+models/
+
+# Checkpoints and model exports may also use a custom output directory
+*.pt
+*.pth
+*.ckpt
+*.gbdt
+*.lgbm
+*.bin
+*.npz
+*.npy
+
+# Local credentials
+.env
+.env.*
+.kaggle/
+kaggle.json

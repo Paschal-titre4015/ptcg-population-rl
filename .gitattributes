@@ -1,0 +1,2 @@
+# Preserve the official deck bytes, including CRLF line endings.
+src/agents/*/deck.csv -text whitespace=trailing-space,space-before-tab,cr-at-eol
